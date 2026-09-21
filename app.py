@@ -22,7 +22,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
-    page_title="Innovatrix | Mine monitoring",
+    page_title="INNOVATRIX | Mine monitoring console",
     page_icon="⛏️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -321,6 +321,26 @@ div[data-testid="stDataFrame"] { border: 1px solid #D9DFE5; border-radius: 4px; 
 
 st.markdown(f"<style>{H(CSS)}</style>", unsafe_allow_html=True)
 
+# ============================================================
+# LOGIN THEME
+# ============================================================
+LOGIN_CSS = """
+.login-brand{min-height:500px;padding:48px 42px;border-radius:8px 0 0 8px;background:#12212B;color:#FFFFFF;position:relative;overflow:hidden}
+.login-brand:before,.login-brand:after{content:"";position:absolute;border:1px solid rgba(157,194,211,.18);border-radius:50%;pointer-events:none}
+.login-brand:before{width:600px;height:600px;right:-330px;top:-160px}.login-brand:after{width:390px;height:390px;right:-170px;bottom:-190px}
+.login-brand-content{position:relative;z-index:2}.login-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:54px}
+.login-logo-name{font-size:21px;font-weight:600;letter-spacing:.8px;color:#FFFFFF;line-height:1.1}.login-logo-sub{font-size:12px;color:#8FA6B2;margin-top:3px}
+.login-eyebrow{font-size:12px;color:#9FB6C2;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}.login-title{font-size:33px;line-height:1.15;font-weight:600;letter-spacing:-.5px;color:#FFFFFF;margin-bottom:15px}
+.login-copy{max-width:450px;color:#C5D4DB;font-size:14px;line-height:1.65}.login-system{position:absolute;left:42px;right:42px;bottom:30px;border-top:1px solid #26404F;padding-top:16px;color:#8FA6B2;font-size:12px;z-index:2}.login-system strong{color:#E6EEF2;font-weight:500}
+.login-form{min-height:500px;padding:48px 44px;background:#FFFFFF;border-radius:0 8px 8px 0}.login-form-title{font-size:25px;font-weight:600;color:#14202B;letter-spacing:-.2px;margin:85px 0 6px 0}.login-form-sub{font-size:13px;color:#6B7A87;margin-bottom:25px}
+.login-error{background:#F9E4E1;border-left:3px solid #B4372E;color:#8F2A22;padding:10px 12px;border-radius:0 4px 4px 0;font-size:13px;margin-bottom:13px}
+.login-form div[data-testid="stTextInput"] label{color:#5F6E7B !important;font-size:12px !important}.login-form div[data-testid="stTextInput"] input{background:#FFFFFF !important;color:#14202B !important;border:1px solid #D9DFE5 !important;border-radius:5px !important;height:44px !important;font-size:14px !important}.login-form div[data-testid="stTextInput"] input:focus{border-color:#2B6C8F !important;box-shadow:0 0 0 1px #2B6C8F !important}
+.login-form .stButton>button{height:44px;margin-top:8px;border-radius:5px;border:1px solid #F2B705;background:#F2B705;color:#12212B;font-weight:600;font-size:14px}.login-form .stButton>button:hover{background:#DFA900;border-color:#DFA900;color:#12212B}
+.login-help{font-size:11.5px;line-height:1.5;color:#8794A0;margin-top:15px}.login-demo{font-size:11px;color:#7A8894;margin-top:10px;padding-top:10px;border-top:1px solid #E6EAEE}.login-card{background:#FFFFFF;border:1px solid #D9DFE5;border-radius:8px;box-shadow:0 14px 40px rgba(20,32,43,.12);padding:0;overflow:hidden}
+@media(max-width:800px){.login-brand,.login-form{min-height:auto;border-radius:8px;padding:32px 28px}.login-system{position:static;margin-top:42px}.login-title{font-size:28px}.login-form-title{margin-top:0}}
+"""
+st.markdown(f"<style>{H(LOGIN_CSS)}</style>", unsafe_allow_html=True)
+
 
 # ============================================================
 # ARTWORK  (generated SVG, no external files needed)
@@ -371,6 +391,45 @@ LOGO = (
     '<polyline points="5,19 11,19 15,10 20,26 24,15 29,15" fill="none" stroke="#12212B" '
     'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 )
+
+# ============================================================
+# LOGIN / AUTHENTICATION
+# ============================================================
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "login_error" not in st.session_state:
+    st.session_state.login_error = ""
+
+if not st.session_state.authenticated:
+    st.markdown("<style>section[data-testid='stSidebar']{display:none!important;} .block-container{max-width:1180px!important;padding-top:2rem!important;}</style>", unsafe_allow_html=True)
+    st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+    left, right = st.columns([1.08, 0.92], gap="small")
+    with left:
+        md(f'<div class="login-brand"><div class="login-brand-content"><div class="login-logo-row">{LOGO}<div><div class="login-logo-name">INNOVATRIX</div><div class="login-logo-sub">Mine monitoring console</div></div></div><div class="login-eyebrow">Smart Automation · Hardware Prototype</div><div class="login-title">Real-time mine<br>subsidence monitoring.</div><div class="login-copy">Monitor ground tilt, vibration and relative displacement across distributed sensor nodes, with a combined risk index for early warning.</div></div><div class="login-system"><strong>Prototype Mine</strong> · GW-001 · SX1278 LoRa · 4 monitoring nodes</div></div>')
+    with right:
+        st.markdown('<div class="login-form"><div class="login-form-title">Sign in</div><div class="login-form-sub">Access the INNOVATRIX monitoring console</div>', unsafe_allow_html=True)
+        if st.session_state.login_error:
+            st.markdown(f'<div class="login-error">{st.session_state.login_error}</div>', unsafe_allow_html=True)
+        with st.form("login_form", clear_on_submit=False):
+            username = st.text_input("Username", placeholder="Enter your username")
+            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            submitted = st.form_submit_button("Sign in", use_container_width=True)
+        if submitted:
+            if username.strip() == "admin" and password == "innovatrix@2026":
+                st.session_state.authenticated = True
+                st.session_state.login_error = ""
+                st.rerun()
+            else:
+                st.session_state.login_error = "Invalid username or password. Please check your credentials."
+                st.rerun()
+        md('<div class="login-help">Prototype access for the project demonstration. Production deployment should use secure authentication and secrets management.</div><div class="login-demo"><b>Demo account:</b> admin</div>')
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.stop()
+
+# ============================================================
+# END LOGIN / AUTHENTICATION
+# ============================================================
 
 
 def section_svg(states: dict, tilts: dict) -> str:
@@ -620,6 +679,11 @@ with st.sidebar:
     st.write("")
     if st.button("Refresh data", use_container_width=True):
         build_data.clear()
+        st.rerun()
+    st.write("")
+    if st.button("Sign out", use_container_width=True):
+        st.session_state.authenticated = False
+        st.session_state.login_error = ""
         st.rerun()
 
 n_min = WINDOWS[window]
